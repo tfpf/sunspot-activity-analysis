@@ -42,6 +42,39 @@ if __name__ == '__main__':
 
 			current_date += datetime.timedelta(days = 1)
 
+
+
+	new_year = [0]*365
+	window_size = 15
+	gaussian_window = [0]*(2*window_size + 1)
+	window_centre = 0
+	total_weight = 0
+	x = len(activity)//365
+	year_weight = [0]*x
+
+	average = 0
+
+	for i in range(len(gaussian_window)):
+
+		gaussian_window[i] = (len(gaussian_window)- abs(i - window_size))/(len(gaussian_window)**2)
+		total_weight = total_weight + gaussian_window[i]
+
+	#print(gaussian_window)
+
+	for i in range(365):
+
+		for year in range(len(activity)//365):
+			
+			window_centre = i + 365*year
+
+			if(window_centre - window_size > -1):
+				year_weight[year] = (np.dot(activity[window_centre - window_size : window_centre + window_size+1] , gaussian_window))/total_weight
+			else:
+				year_weight[year] =  (np.dot(activity[window_centre: window_centre + window_size] , gaussian_window[window_centre:window_centre+window_size]))/total_weight
+
+		new_year[i] = np.mean(year_weight)
+
+
 	# open a window to plot the training data
 	plt.style.use('classic')
 	fig = plt.figure()
@@ -122,4 +155,30 @@ if __name__ == '__main__':
 	ax.set_title('Variation of Solar Activity, 2010')
 
 	plt.show()
+
+
+	# open a window to plot the testing data
+	plt.style.use('classic')
+	fig = plt.figure()
+	fig.canvas.set_window_title('Variation of Solar Activity')
+	ax = fig.add_subplot(1, 1, 1)
+	ax.axhline(linewidth = 1.6, color = 'k')
+	ax.axvline(linewidth = 1.6, color = 'k')
+	ax.plot(new_yeare, 'r-', label = 'number of bright solar regions')
+	with open('status', 'a') as status_file:
+		print('testing data: {}'.format(len(activity)), file = status_file)
+
+	# beautification
+	ax.grid(True, linewidth = 0.4)
+	ax.legend()
+	ax.set_xlabel('time')
+	ax.set_xlim(0, 243)
+	ax.set_xticks([0, 31, 59, 90, 120, 151, 181, 212, 243])
+	# ax.set_xticklabels(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'])
+	ax.set_ylabel('solar activity')
+	ax.set_ylim(0, 80)
+	ax.set_title('Variation of Solar Activity Apna Wala, 2010')
+
+	plt.show()
+
 
