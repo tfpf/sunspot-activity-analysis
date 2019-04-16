@@ -80,28 +80,8 @@ def count_bright_regions(fits_image):
 
 if __name__ == '__main__':
 
-	with open('bright_patches.dat', 'a') as data_file:
+	with open('training.dat', 'a') as data_file:
 		for fits_img in sorted(os.listdir(dldir)):
 			print('{} {}'.format(fits_img, count_bright_regions(dldir + fits_img)), file = data_file)
 			data_file.flush()
 
-	'''
-
-
-	# plot the number of regions against time
-	plt.style.use('classic')
-	fig = plt.figure()
-	fig.canvas.set_window_title('Temporal Variation of Solar Activity')
-	ax = fig.add_subplot(1, 1, 1)
-	ax.set_title('Temporal Variation of Solar Activity')
-	ax.set_xlabel('time')
-	ax.set_ylabel('solar activity')
-	ax.plot(n_bright, 'r--.', linewidth = 0.8, label = 'number of bright regions')
-	ax.legend()
-	ax.grid(True, linewidth = 0.4)
-	ax.axhline(linewidth = 1.6, color = 'k')
-	ax.axvline(linewidth = 1.6, color = 'k')
-	# ax.set_xticks([0, 31, 59])
-	# ax.set_xticklabels(['January', 'February', 'March'])
-	plt.show()
-	'''

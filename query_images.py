@@ -84,6 +84,6 @@ if __name__ == '__main__':
 		raise SystemExit
 
 	# starting date from when images have to be downloaded
-	s_date = datetime.date(2007, 12, 31)
+	s_date = datetime.date(2005, 1, 1)
 	download_multiple_images(s_date, number_of_days)
 
