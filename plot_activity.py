@@ -3,8 +3,13 @@
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 if __name__ == '__main__':
+
+	with open('status', 'w') as status_file:
+		print('Last Run: {}'.format(sys.argv), file = status_file)
+		print('Arguments: {}'.format(len(sys.argv)), file = status_file)
 
 	# plot the training data
 
@@ -45,7 +50,8 @@ if __name__ == '__main__':
 	ax.axhline(linewidth = 1.6, color = 'k')
 	ax.axvline(linewidth = 1.6, color = 'k')
 	ax.plot(activity, 'r-', label = 'number of bright solar regions')
-	print(len(activity))
+	with open('status', 'a') as status_file:
+		print('training data: {}'.format(len(activity)), file = status_file)
 
 	# beautification
 	ax.grid(True, linewidth = 0.4)
@@ -101,7 +107,8 @@ if __name__ == '__main__':
 	ax.axhline(linewidth = 1.6, color = 'k')
 	ax.axvline(linewidth = 1.6, color = 'k')
 	ax.plot(activity, 'r-', label = 'number of bright solar regions')
-	print(len(activity))
+	with open('status', 'a') as status_file:
+		print('testing data: {}'.format(len(activity)), file = status_file)
 
 	# beautification
 	ax.grid(True, linewidth = 0.4)
