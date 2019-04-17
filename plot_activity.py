@@ -213,7 +213,7 @@ if __name__ == '__main__':
 	fig = plt.figure()
 	fig.canvas.set_window_title('Variation of Solar Activity')
 	ax = fig.add_subplot(1, 1, 1)
-	ax.axhline(linewidth = 1.6, color = 'k')
+	ax.axhline(linewidth = 1.61, color = 'k')
 	ax.axvline(linewidth = 1.6, color = 'k')
 	ax.plot(new_yeare, 'r-', label = 'number of bright solar regions')
 	with open('status', 'a') as status_file:
