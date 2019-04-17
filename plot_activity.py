@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
 
 	new_year = [0]*365
-	window_size = 15
+	#window_size = 15
 	# gaussian_window = [0]*(2*window_size + 1)
 	window_centre = 0
 	total_weight = 0
@@ -97,17 +97,38 @@ if __name__ == '__main__':
 
 	spots = np.concatenate([np.zeros(365), activity])
 	best_correlation = 0
-	best_prediction = -20
-	for prediction in range(-20, 21):
-		correlation = np.sum(moving_correlation(spots, gaussian_window, i + prediction) for i in [365, 1085, 1450, 1826])
+	best_prediction = -100
+
+	for prediction in range(-100, 100):
+		correlation = np.average([moving_correlation(spots, gaussian_window, i + prediction) for i in [365, 1085, 1450, 1826]] , axis = None, weights= [0.1,0.2,0.3,0.4])
 		if correlation > best_correlation:
 			best_correlation = correlation
 			best_prediction = prediction
 	print(best_prediction)
 
+	best_correlation = 0
+	best_prediction = -100
+
+	for prediction in range(-100, 100):
+		correlation = np.average([moving_correlation(spots, gaussian_window, i + prediction) for i in [565, 930, 1285, 1650, 2026]], axis = None, weights= [0.05,0.125,0.2,0.275,0.35])
+		if correlation > best_correlation:
+			best_correlation = correlation
+			best_prediction = prediction
+	print(best_prediction+200)
+
+	# for day in range(365):
+	# 	for prediction in range(-20 + day, 20+day):
+	# 		best_correlation = 0
+	# 		best_prediction = -20
+	# 		correlation = np.sum(moving_correlation(spots, gaussian_window, i + prediction) for i in [365, 1085, 1450, 1826])
+	# 		if correlation > best_correlation:
+	# 			best_correlation = correlation
+	# 			best_prediction = prediction
+	# 	print(best_prediction, best_correlation)
+	# 	new_year[best_prediction] = best_correlation
 
 
-
+	# print(new_year)
 
 
 
@@ -215,7 +236,7 @@ if __name__ == '__main__':
 	ax = fig.add_subplot(1, 1, 1)
 	ax.axhline(linewidth = 1.6, color = 'k')
 	ax.axvline(linewidth = 1.6, color = 'k')
-	ax.plot(new_yeare, 'r-', label = 'number of bright solar regions')
+	ax.plot(new_year, 'r-', label = 'number of bright solar regions')
 	with open('status', 'a') as status_file:
 		print('testing data: {}'.format(len(activity)), file = status_file)
 
