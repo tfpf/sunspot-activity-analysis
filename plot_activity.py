@@ -4,7 +4,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-
+#import scipy
 ################################################################################
 
 def create_window(n):
@@ -104,9 +104,21 @@ if __name__ == '__main__':
 		if correlation > best_correlation:
 			best_correlation = correlation
 			best_prediction = prediction
-	print(best_prediction)
+	print('Predicted day for first spike '+str(best_prediction))
+	someday = []
+	# someday = [i for i,j in enumerate(activity) if j >= 20 and j <= 30]
+	i = 100
+	while i < len(activity):
+		if 20 <= activity[i] <= 30:
+			someday.append(i)
+			i += 300
+		i += 1
 
-	best_correlation = 0
+	coeffs = np.polyfit(range(5),someday,1)
+	predicted = int(np.polyval(coeffs,5)-1826)
+	print('Predicted day for second spike '+str(predicted))
+
+	'''best_correlation = 0
 	best_prediction = -100
 
 	for prediction in range(-100, 100):
@@ -115,7 +127,7 @@ if __name__ == '__main__':
 			best_correlation = correlation
 			best_prediction = prediction
 	print(best_prediction+200)
-
+'''
 	# for day in range(365):
 	# 	for prediction in range(-20 + day, 20+day):
 	# 		best_correlation = 0
@@ -230,26 +242,6 @@ if __name__ == '__main__':
 
 
 	# open a window to plot the testing data
-	plt.style.use('classic')
-	fig = plt.figure()
-	fig.canvas.set_window_title('Variation of Solar Activity')
-	ax = fig.add_subplot(1, 1, 1)
-	ax.axhline(linewidth = 1.61, color = 'k')
-	ax.axvline(linewidth = 1.6, color = 'k')
-	ax.plot(new_year, 'r-', label = 'number of bright solar regions')
-	with open('status', 'a') as status_file:
-		print('testing data: {}'.format(len(activity)), file = status_file)
 
-	# beautification
-	ax.grid(True, linewidth = 0.4)
-	ax.legend()
-	ax.set_xlabel('time')
-	ax.set_xlim(0, 243)
-	ax.set_xticks([0, 31, 59, 90, 120, 151, 181, 212, 243])
-	# ax.set_xticklabels(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'])
-	ax.set_ylabel('solar activity')
-	ax.set_ylim(0, 80)
-	ax.set_title('Variation of Solar Activity Apna Wala, 2010')
 
-	plt.show()
 
