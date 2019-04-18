@@ -31,9 +31,23 @@ def create_window(n):
 ################################################################################
 
 def moving_correlation(big, small, centre):
+	'''
+	Calculate the correlation of a window sequence with a chunk of a big sequence.
+
+	Args:
+		big: main sequence
+		small: window sequence
+		centre: int indicating where to overlap 'small' with 'big'
+	'''
 
 	window_size = len(small)
+
+	# slice 'big' to obtain a sequence as long as 'small'
+	# where to slice it depends on 'centre'
+	# slice it in such a way that 'big[centre]' is the middle element of 'arr'
 	arr = big[centre - (window_size - 1) // 2 : centre + (window_size - 1) // 2 + 1]
+
+	# correlate them
 	return np.dot(arr, small)
 
 ################################################################################
@@ -75,38 +89,34 @@ if __name__ == '__main__':
 
 			current_date += datetime.timedelta(days = 1)
 
-
-
-	new_year = [0]*365
-	#window_size = 15
-	# gaussian_window = [0]*(2*window_size + 1)
-	window_centre = 0
-	total_weight = 0
-	x = len(activity)//365
-	year_weight = [0]*x
-
-	average = 0
-
+	# create a window to correlate
 	window_size = 31
 	gaussian_window = create_window(window_size)
-	total_weight = np.sum(gaussian_window)
 
-	activity[activity == np.nan] = 0
-
-	########################################
-
+	# to make correlation calculation easy, place 365 zeros in front of 'activity'
 	spots = np.concatenate([np.zeros(365), activity])
+
+	# find the shift from 1st January which gives the best correlation
 	best_correlation = 0
 	best_prediction = -100
 
+	# 'prediction' is the shift from 1st January
+	# it indicates the shift 'gaussian_window' must be given before correlating
+	# for each shift, calculate the weighted average of of the correlation with each major spike
+	# the best shift will have the greatest weighted average
 	for prediction in range(-100, 100):
 		correlation = np.average([moving_correlation(spots, gaussian_window, i + prediction) for i in [365, 1085, 1450, 1826]] , axis = None, weights= [0.1,0.2,0.3,0.4])
 		if correlation > best_correlation:
 			best_correlation = correlation
 			best_prediction = prediction
 	print('Predicted day for first spike '+str(best_prediction))
+
+	# predict the second spike
+	# the minor spikes seem to be linear
+	# the gaps betwen them are approximately constant
+	# hence, use linear polynomial interpolation
+	# first, locate all these minor spikes
 	someday = []
-	# someday = [i for i,j in enumerate(activity) if j >= 20 and j <= 30]
 	i = 100
 	while i < len(activity):
 		if 20 <= activity[i] <= 30:
@@ -114,50 +124,13 @@ if __name__ == '__main__':
 			i += 300
 		i += 1
 
+	# find the linear polynomial which best fits these points
 	coeffs = np.polyfit(range(5),someday,1)
+
+	# evaluate the polynomial at the next point
+	# that is the predicted location of the next spike
 	predicted = int(np.polyval(coeffs,5)-1826)
 	print('Predicted day for second spike '+str(predicted))
-
-	'''best_correlation = 0
-	best_prediction = -100
-
-	for prediction in range(-100, 100):
-		correlation = np.average([moving_correlation(spots, gaussian_window, i + prediction) for i in [565, 930, 1285, 1650, 2026]], axis = None, weights= [0.05,0.125,0.2,0.275,0.35])
-		if correlation > best_correlation:
-			best_correlation = correlation
-			best_prediction = prediction
-	print(best_prediction+200)
-'''
-	# for day in range(365):
-	# 	for prediction in range(-20 + day, 20+day):
-	# 		best_correlation = 0
-	# 		best_prediction = -20
-	# 		correlation = np.sum(moving_correlation(spots, gaussian_window, i + prediction) for i in [365, 1085, 1450, 1826])
-	# 		if correlation > best_correlation:
-	# 			best_correlation = correlation
-	# 			best_prediction = prediction
-	# 	print(best_prediction, best_correlation)
-	# 	new_year[best_prediction] = best_correlation
-
-
-	# print(new_year)
-
-
-
-
-
-	# for i in range(365):
-		# for year in range(len(activity)//365):
-
-			# window_centre = i + 365*year
-
-			# if(window_centre - window_size > -1):
-				# year_weight[year] = (np.dot(activity[window_centre - window_size : window_centre + window_size+1] , gaussian_window))/total_weight
-			# else:
-				# year_weight[year] =  (np.dot(activity[window_centre: window_centre + window_size] , gaussian_window[window_centre:window_centre+window_size]))/total_weight
-
-		# new_year[i] = np.mean(year_weight)
-
 
 	# open a window to plot the training data
 	plt.style.use('classic')
@@ -242,6 +215,4 @@ if __name__ == '__main__':
 
 
 	# open a window to plot the testing data
-
-
 
